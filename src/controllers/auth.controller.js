@@ -1,6 +1,6 @@
 const userModel = require("../models/user.model")
  const jwt = require("jsonwebtoken")
-
+const emailService = require("../service/email.service")
 
  /* user register controller */
 async function userRegisterController(req, res){
@@ -29,7 +29,11 @@ async function userRegisterController(req, res){
             expiresIn:"3d"
         }
     )
-    res.cookie("token" , token)
+    const options = {
+      httpOnly: true,
+      secure: true
+    }
+    res.cookie("token" , token , options)
     res.status(201).json({
         user:{
             _id:user._id,
@@ -38,13 +42,14 @@ async function userRegisterController(req, res){
         },
         token
     })
+     await emailService.sendRegistrationEmail(user.email , user.name)
 
 }
 /*user login controller*/
 async function userLoginController(req , res){
     const {email , password} = req.body
 
-    const user = await userModel.findOne({email})
+    const user = await userModel.findOne({email}).select("+password")
 
     if(!user){
         return res.status(401).json({
@@ -68,7 +73,11 @@ async function userLoginController(req , res){
             expiresIn:"3d"
         }
     )
-    res.cookie("token" , token)
+    const options = {
+      httpOnly: true,
+      secure: true
+    }
+    res.cookie("token" , token , options)
     res.status(200).json({
         user:{
             _id:user._id,
@@ -77,9 +86,12 @@ async function userLoginController(req , res){
         },
         token
     })
+
+   
 }
   
 module.exports = {
     userRegisterController,
     userLoginController
 }
+
