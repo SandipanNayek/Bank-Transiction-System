@@ -4,13 +4,16 @@ const accountSchema = new mongoose.Schema({
     user:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"user",
-        required:[true , "user is required for creating an account"]
+        required:[true , "user is required for creating an account"],
+        index : true
     },
     status:{
+        type:String,
         enum:{
             values:["ACTIVE" , "FROZEN" , "CLOSED"], 
             message:"status should be either ACTIVE , FROZEN or CLOSED"
-        }
+        },
+        default:"ACTIVE"
     },
     currency:{
         type:String,
@@ -19,6 +22,9 @@ const accountSchema = new mongoose.Schema({
     },
     
 } , {timestamps:true})
+
+accountSchema.index({user: 1 , status:1})   /* compund idx */
+
 
 const accountModel = mongoose.model("account" , accountSchema)
 
