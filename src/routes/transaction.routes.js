@@ -13,6 +13,6 @@ transactionRoutes.post("/" , authMiddleware.authMiddleware ,transactionControlle
 
 /* create initial funds transaction from user system */
 
-transactionRoutes.post("/system/initial-funds" , authMiddleware.authSystemUserMiddleware)
+transactionRoutes.post("/system/initial-funds" , authMiddleware.authSystemUserMiddleware , transactionController.createInitialFundsTransaction)
 
 module.exports = transactionRoutes
